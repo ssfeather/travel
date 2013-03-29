@@ -18,10 +18,14 @@ import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.ViewPart;
 
 import ca.ceaigp.muly.wavegraph.dataprovider.CircularBufferDataProvider;
+import ca.ceaigp.muly.wavegraph.figures.Axis;
 import ca.ceaigp.muly.wavegraph.figures.ToolbarArmedXYGraph;
 import ca.ceaigp.muly.wavegraph.figures.Trace;
 import ca.ceaigp.muly.wavegraph.figures.XYGraph;
 import ca.ceaigp.muly.wavegraph.figures.Trace.PointStyle;
+import ca.ceaigp.muly.wavegraph.linearscale.AbstractScale.LabelSide;
+import ca.ceaigp.muly.wavegraph.linearscale.Range;
+import ca.ceaigp.muly.wavegraph.util.XYGraphMediaFactory;
 
 import edu.sc.seis.seisFile.sac.SacTimeSeries;
 
@@ -112,18 +116,58 @@ public class View extends ViewPart
 
 		ToolbarArmedXYGraph toolbarArmedXYGraph = new ToolbarArmedXYGraph(xyGraph);
 
-		xyGraph.setTitle("Simple Example");
+		xyGraph.setTitle("Seismic Wave");
 		// set it as the content of LightwightSystem
 		lws.setContents(toolbarArmedXYGraph);
+		
+		xyGraph.setFont(XYGraphMediaFactory.getInstance().getFont(XYGraphMediaFactory.FONT_TAHOMA));
+		xyGraph.primaryXAxis.setTitle("Time");
+		xyGraph.primaryYAxis.setTitle("Amplitude");
+		xyGraph.primaryXAxis.setRange(new Range(0,200));
+		xyGraph.primaryXAxis.setDateEnabled(true);
+		xyGraph.primaryYAxis.setAutoScale(true);
+		xyGraph.primaryXAxis.setAutoScale(true);
+		xyGraph.primaryXAxis.setShowMajorGrid(true);
+		xyGraph.primaryYAxis.setShowMajorGrid(true);
+		xyGraph.primaryXAxis.setAutoScaleThreshold(0);
+		//------------------------------------------------------------
+		final Axis x2Axis = new Axis("X-2", false);
+		x2Axis.setTickLableSide(LabelSide.Secondary);
+		//x2Axis.setAutoScale(true);
+		xyGraph.addAxis(x2Axis);
+
+
+		final Axis y2Axis = new Axis("Log Scale", true);
+		y2Axis.setRange(10, 500);
+		y2Axis.setLogScale(true);
+		//y2Axis.setAutoScale(true);
+		y2Axis.setForegroundColor(XYGraphMediaFactory.getInstance().getColor(XYGraphMediaFactory.COLOR_PINK));
+		y2Axis.setTickLableSide(LabelSide.Secondary);
+		xyGraph.addAxis(y2Axis);
+		
+		Axis y3Axis = new Axis("Y-3", true);
+		y3Axis.setForegroundColor(XYGraphMediaFactory.getInstance().getColor(XYGraphMediaFactory.COLOR_BLUE));
+		y3Axis.setTickLableSide(LabelSide.Secondary);
+		y3Axis.setRange(new Range(-2, 3));
+		y3Axis.setShowMajorGrid(false);
+		y3Axis.setAutoScale(true);
+//		xyGraph.addAxis(y3Axis);
+		
+		CircularBufferDataProvider trace2Provider = new CircularBufferDataProvider(true);
+		trace2Provider.setBufferSize(100);
+		trace2Provider.setUpdateDelay(100);
+		//-------------------------------------------------------------------------
 
 		// create a trace data provider, which will provide the data to the
 		// trace.
 		SacTimeSeries sac = getSacData("/Users/macuser/SeisData/test1.sac");
 		
 		CircularBufferDataProvider traceDataProvider = new CircularBufferDataProvider(true);
+		
 		float[] sacx = sac.getX();
 		float[] sacy = sac.getY();
 		traceDataProvider.setBufferSize(sacy.length);
+		//traceDataProvider.setUpdateDelay(100);
 		traceDataProvider.setCurrentXDataArray(sacx);
 		traceDataProvider.setCurrentYDataArray(sacy);
 		xyGraph.primaryXAxis.setAutoScale(true);
@@ -156,9 +200,15 @@ public class View extends ViewPart
 		//xyGraph.primaryYAxis.setAutoScale(true);
 		
 		// create the trace
-		Trace trace1 = new Trace("Wave2", xyGraph.primaryXAxis, xyGraph.primaryYAxis, traceDataProvider1);
+		Axis ax = new Axis("AX",false);
+		Axis ay = new Axis("AY",true);
 		
-
+		ax.setAutoScale(true);
+		ay.setAutoScale(true);
+		//ax.setRange(0, sacx1.length);
+		//ay.setRange(null);
+		Trace trace1 = new Trace("Wave2",xyGraph.primaryXAxis, xyGraph.primaryYAxis, traceDataProvider1);
+		
 		// set trace property
 		// trace.setPointStyle(PointStyle.XCROSS);
 		//trace.setPointStyle(PointStyle.FILLED_DIAMOND);
