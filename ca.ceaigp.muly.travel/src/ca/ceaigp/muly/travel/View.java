@@ -4,6 +4,15 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 
+import org.csstudio.swt.xygraph.dataprovider.CircularBufferDataProvider;
+import org.csstudio.swt.xygraph.figures.Axis;
+import org.csstudio.swt.xygraph.figures.ToolbarArmedXYGraph;
+import org.csstudio.swt.xygraph.figures.Trace;
+import org.csstudio.swt.xygraph.figures.XYGraph;
+import org.csstudio.swt.xygraph.figures.Trace.PointStyle;
+import org.csstudio.swt.xygraph.linearscale.Range;
+import org.csstudio.swt.xygraph.linearscale.AbstractScale.LabelSide;
+import org.csstudio.swt.xygraph.util.XYGraphMediaFactory;
 import org.eclipse.draw2d.LightweightSystem;
 import org.eclipse.jface.viewers.IStructuredContentProvider;
 import org.eclipse.jface.viewers.ITableLabelProvider;
@@ -17,15 +26,6 @@ import org.eclipse.ui.ISharedImages;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.ViewPart;
 
-import ca.ceaigp.muly.wavegraph.dataprovider.CircularBufferDataProvider;
-import ca.ceaigp.muly.wavegraph.figures.Axis;
-import ca.ceaigp.muly.wavegraph.figures.ToolbarArmedXYGraph;
-import ca.ceaigp.muly.wavegraph.figures.Trace;
-import ca.ceaigp.muly.wavegraph.figures.XYGraph;
-import ca.ceaigp.muly.wavegraph.figures.Trace.PointStyle;
-import ca.ceaigp.muly.wavegraph.linearscale.AbstractScale.LabelSide;
-import ca.ceaigp.muly.wavegraph.linearscale.Range;
-import ca.ceaigp.muly.wavegraph.util.XYGraphMediaFactory;
 
 import edu.sc.seis.seisFile.sac.SacTimeSeries;
 
