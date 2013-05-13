@@ -28,13 +28,11 @@ public interface IAxisListener {
 	 */
 	public void axisRevalidated(Axis axis);	
 	
-	public void axisForegroundColorChanged(Axis axis, Color oldColor,
-			Color newColor);
+	public void axisForegroundColorChanged(Axis axis, Color oldColor, Color newColor);
 
 	public void axisTitleChanged(Axis axis, String oldTitle, String newTitle);
 
-	public void axisAutoScaleChanged(Axis axis, boolean oldAutoScale,
-			boolean newAutoScale);
+	public void axisAutoScaleChanged(Axis axis, boolean oldAutoScale, boolean newAutoScale);
 
 	public void axisLogScaleChanged(Axis axis, boolean old, boolean logScale);	
 		

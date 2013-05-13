@@ -9,7 +9,6 @@ import org.csstudio.swt.xygraph.figures.Axis;
 import org.csstudio.swt.xygraph.figures.ToolbarArmedXYGraph;
 import org.csstudio.swt.xygraph.figures.Trace;
 import org.csstudio.swt.xygraph.figures.XYGraph;
-import org.csstudio.swt.xygraph.figures.Trace.PointStyle;
 import org.csstudio.swt.xygraph.linearscale.Range;
 import org.csstudio.swt.xygraph.linearscale.AbstractScale.LabelSide;
 import org.csstudio.swt.xygraph.util.XYGraphMediaFactory;
@@ -25,7 +24,6 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.ISharedImages;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.ViewPart;
-
 
 import edu.sc.seis.seisFile.sac.SacTimeSeries;
 
@@ -98,7 +96,6 @@ public class View extends ViewPart
 	        // TODO Auto-generated catch block
 	        e.printStackTrace();
         }
-		
 		return sac;
 	}
 	
@@ -112,83 +109,33 @@ public class View extends ViewPart
 		lws = new LightweightSystem(new Canvas(parent, SWT.NONE));
 
 		// create a new XY Graph.
-		XYGraph xyGraph = new XYGraph();
+		//XYGraph xyGraph = new XYGraph();
+		XYGraph swtFigure = new XYGraph();
+		
+		ToolbarArmedXYGraph toolbarArmedXYGraph = new ToolbarArmedXYGraph(swtFigure);
 
-		ToolbarArmedXYGraph toolbarArmedXYGraph = new ToolbarArmedXYGraph(xyGraph);
-
-		xyGraph.setTitle("Seismic Wave");
+		swtFigure.setTitle("Seismic Wave");
 		// set it as the content of LightwightSystem
 		lws.setContents(toolbarArmedXYGraph);
 		
-		xyGraph.setFont(XYGraphMediaFactory.getInstance().getFont(XYGraphMediaFactory.FONT_TAHOMA));
-		xyGraph.primaryXAxis.setTitle("Time");
-		xyGraph.primaryYAxis.setTitle("Amplitude");
-		xyGraph.primaryXAxis.setRange(new Range(0,200));
-		xyGraph.primaryXAxis.setDateEnabled(true);
-		xyGraph.primaryYAxis.setAutoScale(true);
-		xyGraph.primaryXAxis.setAutoScale(true);
-		xyGraph.primaryXAxis.setShowMajorGrid(true);
-		xyGraph.primaryYAxis.setShowMajorGrid(true);
-		xyGraph.primaryXAxis.setAutoScaleThreshold(0);
-		//------------------------------------------------------------
-		final Axis x2Axis = new Axis("X-2", false);
-		x2Axis.setTickLableSide(LabelSide.Secondary);
-		//x2Axis.setAutoScale(true);
-		xyGraph.addAxis(x2Axis);
-
-
-		final Axis y2Axis = new Axis("Log Scale", true);
-		y2Axis.setRange(10, 500);
-		y2Axis.setLogScale(true);
-		//y2Axis.setAutoScale(true);
-		y2Axis.setForegroundColor(XYGraphMediaFactory.getInstance().getColor(XYGraphMediaFactory.COLOR_PINK));
-		y2Axis.setTickLableSide(LabelSide.Secondary);
-		xyGraph.addAxis(y2Axis);
 		
-		Axis y3Axis = new Axis("Y-3", true);
-		y3Axis.setForegroundColor(XYGraphMediaFactory.getInstance().getColor(XYGraphMediaFactory.COLOR_BLUE));
-		y3Axis.setTickLableSide(LabelSide.Secondary);
-		y3Axis.setRange(new Range(-2, 3));
-		y3Axis.setShowMajorGrid(false);
-		y3Axis.setAutoScale(true);
-//		xyGraph.addAxis(y3Axis);
-		
-		CircularBufferDataProvider trace2Provider = new CircularBufferDataProvider(true);
-		trace2Provider.setBufferSize(100);
-		trace2Provider.setUpdateDelay(100);
-		//-------------------------------------------------------------------------
-
-		// create a trace data provider, which will provide the data to the
-		// trace.
-		SacTimeSeries sac = getSacData("/Users/macuser/SeisData/test1.sac");
-		
-		CircularBufferDataProvider traceDataProvider = new CircularBufferDataProvider(true);
-		
-		float[] sacx = sac.getX();
-		float[] sacy = sac.getY();
-		traceDataProvider.setBufferSize(sacy.length);
-		//traceDataProvider.setUpdateDelay(100);
-		traceDataProvider.setCurrentXDataArray(sacx);
-		traceDataProvider.setCurrentYDataArray(sacy);
-		xyGraph.primaryXAxis.setAutoScale(true);
-		xyGraph.primaryYAxis.setAutoScale(true);
-		
-		// create the trace
-		Trace trace = new Trace("Wave1", xyGraph.primaryXAxis, xyGraph.primaryYAxis, traceDataProvider);
-
-		// set trace property
-		// trace.setPointStyle(PointStyle.XCROSS);
-		//trace.setPointStyle(PointStyle.FILLED_DIAMOND);
-		trace.setPointStyle(PointStyle.NONE);
-		
-		//xyGraph.primaryXAxis.getAutoScaleThreshold();
-		//xyGraph.primaryYAxis.getAutoScaleThreshold();
-		
-		// add the trace to xyGraph
-		xyGraph.addTrace(trace);
-		
+		swtFigure.setFont(XYGraphMediaFactory.getInstance().getFont(XYGraphMediaFactory.FONT_TAHOMA));
+		swtFigure.primaryXAxis.setTitle("Time");
+		swtFigure.primaryYAxis.setTitle("Amplitude");
+		swtFigure.primaryXAxis.setRange(new Range(0,200));
+		swtFigure.primaryXAxis.setDateEnabled(true);
+		swtFigure.primaryYAxis.setAutoScale(true);
+		swtFigure.primaryXAxis.setAutoScale(true);
+		swtFigure.primaryXAxis.setShowMajorGrid(true);
+		swtFigure.primaryYAxis.setShowMajorGrid(true);
+		swtFigure.primaryXAxis.setAutoScaleThreshold(0);
+		swtFigure.getPlotArea().setShowBorder(true);
+		//设置轴不可见
+		//swtFigure.primaryXAxis.setVisible(false);
+		//swtFigure.primaryYAxis.setVisible(false);
+	
 		//--------------------------------------------------------------------------------------------------------
-		SacTimeSeries sac1 = getSacData("/Users/macuser/SeisData/test3.sac");
+		SacTimeSeries sac1 = getSacData("/Users/macuser/SeisData/test2.sac");
 		
 		CircularBufferDataProvider traceDataProvider1 = new CircularBufferDataProvider(true);
 		float[] sacx1 = sac1.getX();
@@ -196,29 +143,41 @@ public class View extends ViewPart
 		traceDataProvider1.setBufferSize(sacy1.length);
 		traceDataProvider1.setCurrentXDataArray(sacx1);
 		traceDataProvider1.setCurrentYDataArray(sacy1);
-		//xyGraph.primaryXAxis.setAutoScale(true);
-		//xyGraph.primaryYAxis.setAutoScale(true);
+	
+		Trace trace1 = new Trace("Wave1",swtFigure.primaryXAxis, swtFigure.primaryYAxis, traceDataProvider1);
+		swtFigure.addTrace(trace1);
 		
-		// create the trace
-		Axis ax = new Axis("AX",false);
-		Axis ay = new Axis("AY",true);
+		//-------------------------------------------------------------------------------------------------------
+		final Axis x2Axis = new Axis("X2", false);
+		final Axis y2Axis = new Axis("Y2", true);
 		
-		ax.setAutoScale(true);
-		ay.setAutoScale(true);
-		//ax.setRange(0, sacx1.length);
-		//ay.setRange(null);
-		Trace trace1 = new Trace("Wave2",xyGraph.primaryXAxis, xyGraph.primaryYAxis, traceDataProvider1);
+		x2Axis.setTickLableSide(LabelSide.Secondary);
+		y2Axis.setTickLableSide(LabelSide.Secondary);
+
+		x2Axis.setTitle("Time");
+		y2Axis.setTitle("Amplitude");
+		x2Axis.setRange(new Range(0,200));
+		x2Axis.setDateEnabled(true);
+		y2Axis.setAutoScale(true);
+		x2Axis.setAutoScale(true);
+		x2Axis.setShowMajorGrid(true);
+		y2Axis.setShowMajorGrid(true);
+		x2Axis.setAutoScaleThreshold(0);
+		swtFigure.addAxis(x2Axis);
+		swtFigure.addAxis(y2Axis);
 		
-		// set trace property
-		// trace.setPointStyle(PointStyle.XCROSS);
-		//trace.setPointStyle(PointStyle.FILLED_DIAMOND);
-		trace1.setPointStyle(PointStyle.NONE);
+		//-----------------------------------------------------------------------------------------------------
+		SacTimeSeries sac2 = getSacData("/Users/macuser/SeisData/test1.sac");
 		
-		//xyGraph.primaryXAxis.getAutoScaleThreshold();
-		//xyGraph.primaryYAxis.getAutoScaleThreshold();
-		
-		// add the trace to xyGraph
-		xyGraph.addTrace(trace1);
+		CircularBufferDataProvider traceDataProvider2 = new CircularBufferDataProvider(true);
+		float[] sacx2 = sac2.getX();
+		float[] sacy2 = sac2.getY();
+		traceDataProvider2.setBufferSize(sacy2.length);
+		traceDataProvider2.setCurrentXDataArray(sacx2);
+		traceDataProvider2.setCurrentYDataArray(sacy2);
+	
+		Trace trace2 = new Trace("Wave2",x2Axis, y2Axis, traceDataProvider2);
+		swtFigure.addTrace(trace2);
 		
 		/*
 		//Test log4j     

@@ -130,10 +130,11 @@ public class Axis extends LinearScale
 		if (yAxis) setOrientation(Orientation.VERTICAL);
 		// Save drawing line operation in RAP.
 		if (GraphicsUtil.isRAP()) setMinorTicksVisible(false);
-
+		
 		final AxisMouseListener panner = new AxisMouseListener();
 		addMouseListener(panner);
 		addMouseMotionListener(panner);
+		
 		grabbing = XYGraphMediaFactory.getCursor(CURSOR_TYPE.GRABBING);
 		Font sysFont = Display.getCurrent().getSystemFont();
 		titleFont = XYGraphMediaFactory.getInstance().getFont(new FontData(sysFont.getFontData()[0].getName(), 12, SWT.BOLD)); //$NON-NLS-1$
@@ -142,7 +143,10 @@ public class Axis extends LinearScale
 			RGB backRGB = getBackgroundColor().getRGB();
 			revertBackColor = XYGraphMediaFactory.getInstance().getColor(255 - backRGB.red, 255 - backRGB.green, 255 - backRGB.blue);
 		}
-		else revertBackColor = XYGraphMediaFactory.getInstance().getColor(100, 100, 100);
+		else 
+		{
+			revertBackColor = XYGraphMediaFactory.getInstance().getColor(100, 100, 100);
+		}
 
 	}
 
@@ -166,7 +170,9 @@ public class Axis extends LinearScale
 	private void fireAxisRangeChanged(final Range old_range, final Range new_range)
 	{
 		for (IAxisListener listener : listeners)
+		{
 			listener.axisRangeChanged(this, old_range, new_range);
+		}
 	}
 
 	@Override
@@ -708,8 +714,14 @@ public class Axis extends LinearScale
 	/** Pan axis according to start/end from mouse listener */
 	private void pan()
 	{
-		if (isHorizontal()) pan(startRange, getPositionValue(start.x, false), getPositionValue(end.x, false));
-		else pan(startRange, getPositionValue(start.y, false), getPositionValue(end.y, false));
+		if (isHorizontal()) 
+		{
+			pan(startRange, getPositionValue(start.x, false), getPositionValue(end.x, false));
+		}
+		else 
+		{
+			pan(startRange, getPositionValue(start.y, false), getPositionValue(end.y, false));
+		}
 	}
 
 	/**
