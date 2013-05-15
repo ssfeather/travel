@@ -23,7 +23,7 @@ public class MoveTrace extends Trace
 	private ZoomType zoomType;
 	private Cursor grabbing;
 	private boolean armed;
-	private Point start;
+	private Point start; 
 	private Point end;
 	private XYGraph xyGraph;
 	
@@ -110,7 +110,6 @@ public class MoveTrace extends Trace
 		{
 			System.out.println("**** MousePressed ****");
 			// Only react to 'main' mouse button, only react to 'real' zoom
-			//启用zoomType为NONE状态，为波形移动
 			//if (me.button != 1 || zoomType == ZoomType.NONE) return;
 			if (me.button != 1) return;
 
@@ -118,7 +117,7 @@ public class MoveTrace extends Trace
 			// get start position
 			switch (zoomType)
 			{
-				case RUBBERBAND_ZOOM:
+				case RUBBERBAND_ZOOM:  
 					start = me.getLocation();
 					end = null;
 					break;
