@@ -349,8 +349,8 @@ public class PlotArea extends Figure
 		{
 			// Only react to 'main' mouse button, only react to 'real' zoom
 			//启用zoomType为NONE状态，为波形移动
-			//if (me.button != 1 || zoomType == ZoomType.NONE) return;
-			if (me.button != 1) return;
+			//if (me.button != 1) return;
+			if (me.button != 1 || zoomType == ZoomType.NONE) return;
 			armed = true;
 			// get start position
 			switch (zoomType)

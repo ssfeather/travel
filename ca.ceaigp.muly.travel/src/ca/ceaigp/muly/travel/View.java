@@ -6,6 +6,7 @@ import java.io.IOException;
 
 import org.csstudio.swt.xygraph.dataprovider.CircularBufferDataProvider;
 import org.csstudio.swt.xygraph.figures.Axis;
+import org.csstudio.swt.xygraph.figures.MoveTrace;
 import org.csstudio.swt.xygraph.figures.ToolbarArmedXYGraph;
 import org.csstudio.swt.xygraph.figures.Trace;
 import org.csstudio.swt.xygraph.figures.XYGraph;
@@ -135,8 +136,8 @@ public class View extends ViewPart
 		//swtFigure.primaryYAxis.setVisible(false);
 	
 		//--------------------------------------------------------------------------------------------------------
-		SacTimeSeries sac1 = getSacData("/Users/macuser/SeisData/test2.sac");
 		
+		SacTimeSeries sac1 = getSacData("/Users/macuser/SeisData/test2.sac");
 		CircularBufferDataProvider traceDataProvider1 = new CircularBufferDataProvider(true);
 		float[] sacx1 = sac1.getX();
 		float[] sacy1 = sac1.getY();
@@ -148,6 +149,7 @@ public class View extends ViewPart
 		swtFigure.addTrace(trace1);
 		
 		//-------------------------------------------------------------------------------------------------------
+		/*
 		final Axis x2Axis = new Axis("X2", false);
 		final Axis y2Axis = new Axis("Y2", true);
 		
@@ -165,8 +167,9 @@ public class View extends ViewPart
 		x2Axis.setAutoScaleThreshold(0);
 		swtFigure.addAxis(x2Axis);
 		swtFigure.addAxis(y2Axis);
-		
+		*/
 		//-----------------------------------------------------------------------------------------------------
+		
 		SacTimeSeries sac2 = getSacData("/Users/macuser/SeisData/test1.sac");
 		
 		CircularBufferDataProvider traceDataProvider2 = new CircularBufferDataProvider(true);
@@ -176,8 +179,11 @@ public class View extends ViewPart
 		traceDataProvider2.setCurrentXDataArray(sacx2);
 		traceDataProvider2.setCurrentYDataArray(sacy2);
 	
-		Trace trace2 = new Trace("Wave2",x2Axis, y2Axis, traceDataProvider2);
+		//MoveTrace trace2 = new MoveTrace("Wave2",x2Axis, y2Axis, traceDataProvider2);
+		MoveTrace trace2 = new MoveTrace("Wave2",swtFigure.primaryXAxis, swtFigure.primaryYAxis, traceDataProvider2);
 		swtFigure.addTrace(trace2);
+		trace2.setXYGRaph(swtFigure);
+		
 		
 		/*
 		//Test log4j     

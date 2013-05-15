@@ -1,7 +1,13 @@
 package org.csstudio.swt.xygraph.figures;
 
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.csstudio.swt.xygraph.dataprovider.IDataProvider;
+import org.csstudio.swt.xygraph.linearscale.Range;
+import org.csstudio.swt.xygraph.undo.SaveStateCommand;
+import org.csstudio.swt.xygraph.undo.ZoomCommand;
 import org.csstudio.swt.xygraph.undo.ZoomType;
 import org.csstudio.swt.xygraph.util.XYGraphMediaFactory;
 import org.csstudio.swt.xygraph.util.XYGraphMediaFactory.CURSOR_TYPE;
@@ -10,48 +16,136 @@ import org.eclipse.draw2d.MouseListener;
 import org.eclipse.draw2d.MouseMotionListener;
 import org.eclipse.draw2d.geometry.Point;
 import org.eclipse.swt.graphics.Cursor;
+import org.eclipse.swt.widgets.Display;
 
 public class MoveTrace extends Trace
 {
 	private ZoomType zoomType;
-	final private Cursor grabbing;
+	private Cursor grabbing;
 	private boolean armed;
 	private Point start;
 	private Point end;
+	private XYGraph xyGraph;
 	
 	public MoveTrace(String name, Axis xAxis, Axis yAxis, IDataProvider dataProvider)
     {
 		super(name, xAxis, yAxis, dataProvider);
 	    // TODO Auto-generated constructor stub
-		grabbing = XYGraphMediaFactory.getCursor(CURSOR_TYPE.GRABBING);
+		TracePlotMouseListener zoomer = new TracePlotMouseListener();
+		addMouseListener(zoomer);
+		addMouseMotionListener(zoomer);
+		//grabbing = XYGraphMediaFactory.getCursor(CURSOR_TYPE.GRABBING);
+		zoomType = ZoomType.NONE;
+		
     }
 	
+	public void setXYGRaph(XYGraph xyGraph)
+	{
+		this.xyGraph = xyGraph;
+	}
+	
+	/**
+	 * Zoom 'in' or 'out' by a fixed factor
+	 * 
+	 * @param horizontally
+	 *            along x axes?
+	 * @param vertically
+	 *            along y axes?
+	 * @param factor
+	 *            Zoom factor. Positive to zoom 'in', negative 'out'.
+	 */
+	private void zoomInOut(final boolean horizontally, final boolean vertically, final double factor)
+	{
+		if (horizontally) for (Axis axis : xyGraph.getXAxisList())
+		{
+			final double center = axis.getPositionValue(start.x, false);
+			axis.zoomInOut(center, factor);
+		}
+		if (vertically) for (Axis axis : xyGraph.getYAxisList())
+		{
+			final double center = axis.getPositionValue(start.y, false);
+			axis.zoomInOut(center, factor);
+		}
+	}
+	
+	
+	//---------------------------------------------------------------------------------
+	/*
+	class TracePlotMouseListener extends MouseMotionListener.Stub implements MouseListener
+	{
+		public void mousePressed(final MouseEvent me)
+		{
+			//System.out.println("**** MousePressed ****");
+		}
+		
+		public void mouseDoubleClicked(final MouseEvent me)
+		{ 
+			System.out.println("**** MouseDoubleClicked ****");
+		}
+
+		public void mouseDragged(final MouseEvent me)
+		{
+			System.out.println("**** MouseDragged ****");
+		}
+
+		public void mouseReleased(final MouseEvent me)
+		{
+			//System.out.println("**** MouseReleased ****");
+		}
+	}
+	*/
 	/**
 	 * Listener to mouse events, performs panning and some zooms Is very similar
 	 * to the Axis.AxisMouseListener, but unclear how easy/useful it would be to
 	 * base them on the same code.
 	 */
-	class PlotMouseListener extends MouseMotionListener.Stub implements MouseListener
+	class TracePlotMouseListener extends MouseMotionListener.Stub implements MouseListener
 	{
+		final private List<Range> xAxisStartRangeList = new ArrayList<Range>();
+		final private List<Range> yAxisStartRangeList = new ArrayList<Range>();
+
+		private SaveStateCommand command;
+		
 		public void mousePressed(final MouseEvent me)
 		{
+			System.out.println("**** MousePressed ****");
 			// Only react to 'main' mouse button, only react to 'real' zoom
 			//启用zoomType为NONE状态，为波形移动
 			//if (me.button != 1 || zoomType == ZoomType.NONE) return;
 			if (me.button != 1) return;
+
 			armed = true;
 			// get start position
 			switch (zoomType)
 			{
 				case RUBBERBAND_ZOOM:
+					start = me.getLocation();
+					end = null;
+					break;
 				case HORIZONTAL_ZOOM:
+					start = new Point(me.getLocation().x, bounds.y);
+					end = null;
+					break;
 				case VERTICAL_ZOOM:
+					start = new Point(bounds.x, me.getLocation().y);
+					end = null;
+					break;
 				case PANNING:
-				case NONE:
-					//System.out.println("**** MousePressed NONE ****");
+					System.out.println("**** MousePressed PANNING ****");
 					setCursor(grabbing);
 					start = me.getLocation();
 					end = null;
+					xAxisStartRangeList.clear();
+					yAxisStartRangeList.clear();
+					for (Axis axis : xyGraph.getXAxisList())
+						xAxisStartRangeList.add(axis.getRange());
+					for (Axis axis : xyGraph.getYAxisList())
+						yAxisStartRangeList.add(axis.getRange());
+					break;
+				case NONE:
+					//System.out.println("**** MousePressed NONE ****");
+					//start = me.getLocation();
+					//end = null;
 					break;
 				case ZOOM_IN:
 				case ZOOM_IN_HORIZONTALLY:
@@ -59,34 +153,58 @@ public class MoveTrace extends Trace
 				case ZOOM_OUT:
 				case ZOOM_OUT_HORIZONTALLY:
 				case ZOOM_OUT_VERTICALLY:
+					start = me.getLocation();
+					end = new Point();
+					// Start timer that will zoom while mouse button is pressed
+					Display.getCurrent().timerExec(Axis.ZOOM_SPEED, new Runnable()
+					{
+						public void run()
+						{
+							if (!armed) return;
+							performInOutZoom();
+							Display.getCurrent().timerExec(Axis.ZOOM_SPEED, this);
+						}
+					});
+					break;
 				default:
 					break;
 			}
 
 			// add command for undo operation
-			//command = new ZoomCommand(zoomType.getDescription(), xyGraph.getXAxisList(), xyGraph.getYAxisList());
-			//me.consume();
+			command = new ZoomCommand(zoomType.getDescription(), xyGraph.getXAxisList(), xyGraph.getYAxisList());
+			me.consume();
 		}
 
+		
 		public void mouseDoubleClicked(final MouseEvent me)
 		{ 
-			//System.out.println("**** MouseDoubleClicked ****");
+			System.out.println("**** MouseDoubleClicked ****");
 		}
 
 		@Override
 		public void mouseDragged(final MouseEvent me)
 		{
-			//System.out.println("**** MouseDragged ****");
+			System.out.println("**** MouseDragged ****");
 			if (!armed) return;
 			switch (zoomType)
 			{
 				case RUBBERBAND_ZOOM:
-				case HORIZONTAL_ZOOM:
-				case VERTICAL_ZOOM:
-				case PANNING:
-				case NONE:
-					//System.out.println("**** MouseDragged NONE****");
 					end = me.getLocation();
+					break;
+				case HORIZONTAL_ZOOM:
+					end = new Point(me.getLocation().x, bounds.y + bounds.height);
+					break;
+				case VERTICAL_ZOOM:
+					end = new Point(bounds.x + bounds.width, me.getLocation().y);
+					break;
+				case PANNING:
+					System.out.println("**** MouseDragged PANNING****");
+					end = me.getLocation();
+					pan();
+					break;
+				case NONE:
+					System.out.println("**** MouseDragged NONE****");
+					//end = me.getLocation();
 					break;
 				default:
 					break;
@@ -97,6 +215,7 @@ public class MoveTrace extends Trace
 		@Override
 		public void mouseExited(final MouseEvent me)
 		{
+			System.out.println("**** MouseExited ****");
 			// Treat like releasing the button to stop zoomIn/Out timer
 			switch (zoomType)
 			{
@@ -106,12 +225,14 @@ public class MoveTrace extends Trace
 				case ZOOM_OUT:
 				case ZOOM_OUT_HORIZONTALLY:
 				case ZOOM_OUT_VERTICALLY:
+					mouseReleased(me);
 				default:
 			}
 		}
 
 		public void mouseReleased(final MouseEvent me)
 		{
+			System.out.println("**** MouseReleased ****");
 			if (!armed) return;
 			armed = false;
 			if (zoomType == ZoomType.PANNING) setCursor(zoomType.getCursor());
@@ -120,25 +241,107 @@ public class MoveTrace extends Trace
 			switch (zoomType)
 			{
 				case RUBBERBAND_ZOOM:
+					for (Axis axis : xyGraph.getXAxisList())
+					{
+						final double t1 = axis.getPositionValue(start.x, false);
+						final double t2 = axis.getPositionValue(end.x, false);
+						axis.setRange(t1, t2, true);
+					}
+					for (Axis axis : xyGraph.getYAxisList())
+					{
+						final double t1 = axis.getPositionValue(start.y, false);
+						final double t2 = axis.getPositionValue(end.y, false);
+						axis.setRange(t1, t2, true);
+					}
+					break;
 				case HORIZONTAL_ZOOM:
+					for (Axis axis : xyGraph.getXAxisList())
+					{
+						final double t1 = axis.getPositionValue(start.x, false);
+						final double t2 = axis.getPositionValue(end.x, false);
+						axis.setRange(t1, t2, true);
+					}
+					break;
 				case VERTICAL_ZOOM:
+					for (Axis axis : xyGraph.getYAxisList())
+					{
+						final double t1 = axis.getPositionValue(start.y, false);
+						final double t2 = axis.getPositionValue(end.y, false);
+						axis.setRange(t1, t2, true);
+					}
+					break;
 				case PANNING:
+					pan();
+					break;
 				case ZOOM_IN:
 				case ZOOM_IN_HORIZONTALLY:
 				case ZOOM_IN_VERTICALLY:
 				case ZOOM_OUT:
 				case ZOOM_OUT_HORIZONTALLY:
 				case ZOOM_OUT_VERTICALLY:
-				case NONE:
+					performInOutZoom();
 					break;
 				default:
 					break;
 			}
 
+			if (zoomType != ZoomType.NONE && command != null)
+			{
+				command.saveState();
+				xyGraph.getOperationsManager().addCommand(command);
+				command = null;
+			}
+			start = null;
+			end = null;
 			MoveTrace.this.repaint();
 		}
+		
+		private void pan()
+		{
+			List<Axis> axes = xyGraph.getXAxisList();
+			for (int i = 0; i < axes.size(); ++i)
+			{
+				final Axis axis = axes.get(i);
+				//axis.setDirty(false);
+				axis.pan(xAxisStartRangeList.get(i), axis.getPositionValue(start.x, false), axis.getPositionValue(end.x, false));
+			}
+			
+			axes = xyGraph.getYAxisList();
+			for (int i = 0; i < axes.size(); ++i)
+			{
+				final Axis axis = axes.get(i);
+				//axis.setDirty(false);
+				axis.pan(yAxisStartRangeList.get(i), axis.getPositionValue(start.y, false), axis.getPositionValue(end.y, false));
+			}
+			
+		}
 
-
+		private void performInOutZoom()
+		{
+			switch (zoomType)
+			{
+				case ZOOM_IN:
+					zoomInOut(true, true, Axis.ZOOM_RATIO);
+					break;
+				case ZOOM_IN_HORIZONTALLY:
+					zoomInOut(true, false, Axis.ZOOM_RATIO);
+					break;
+				case ZOOM_IN_VERTICALLY:
+					zoomInOut(false, true, Axis.ZOOM_RATIO);
+					break;
+				case ZOOM_OUT:
+					zoomInOut(true, true, -Axis.ZOOM_RATIO);
+					break;
+				case ZOOM_OUT_HORIZONTALLY:
+					zoomInOut(true, false, -Axis.ZOOM_RATIO);
+					break;
+				case ZOOM_OUT_VERTICALLY:
+					zoomInOut(false, true, -Axis.ZOOM_RATIO);
+					break;
+				default: // NOP
+			}
+		}
 	}
+	
 }
 
