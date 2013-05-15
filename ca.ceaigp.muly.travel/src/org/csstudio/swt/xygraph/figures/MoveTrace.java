@@ -111,6 +111,7 @@ public class MoveTrace extends Trace
 			System.out.println("**** MousePressed ****");
 			// Only react to 'main' mouse button, only react to 'real' zoom
 			//Enable ZoomType.NONE mouse event
+			//
 			//if (me.button != 1 || zoomType == ZoomType.NONE) return;
 			if (me.button != 1) return;
 
