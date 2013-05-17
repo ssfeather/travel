@@ -406,13 +406,13 @@ public class Axis extends LinearScale
 	/**
 	 * Add a trace to the axis.
 	 * 
-	 * @param trace
+	 * @param moveTrace
 	 *            the trace to be added.
 	 */
-	public void addTrace(final Trace trace)
+	public void addTrace(final Trace Trace)
 	{
-		if (traceList.contains(trace)) return;
-		traceList.add(trace);
+		if (traceList.contains(Trace)) return;
+		traceList.add(Trace);
 		performAutoScale(false);
 	}
 

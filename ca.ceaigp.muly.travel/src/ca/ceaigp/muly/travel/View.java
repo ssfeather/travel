@@ -178,12 +178,13 @@ public class View extends ViewPart
 		traceDataProvider2.setBufferSize(sacy2.length);
 		traceDataProvider2.setCurrentXDataArray(sacx2);
 		traceDataProvider2.setCurrentYDataArray(sacy2);
-	
-		//MoveTrace trace2 = new MoveTrace("Wave2",x2Axis, y2Axis, traceDataProvider2);
-		MoveTrace trace2 = new MoveTrace("Wave2",swtFigure.primaryXAxis, swtFigure.primaryYAxis, traceDataProvider2);
-		swtFigure.addTrace(trace2);
-		trace2.setXYGRaph(swtFigure);
 		
+		Axis moveXAxi = swtFigure.primaryXAxis;
+		Axis moveYAxi = swtFigure.primaryYAxis;
+		MoveTrace trace2 = new MoveTrace("Wave2",moveXAxi, moveYAxi, traceDataProvider2);
+		//Trace trace2 = new Trace("Wave2",swtFigure.primaryXAxis, swtFigure.primaryYAxis, traceDataProvider2, true);
+		swtFigure.addTrace(trace2);
+		trace2.setXYGraph(swtFigure);
 		
 		/*
 		//Test log4j     

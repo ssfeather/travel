@@ -9,8 +9,6 @@ import org.csstudio.swt.xygraph.linearscale.Range;
 import org.csstudio.swt.xygraph.undo.SaveStateCommand;
 import org.csstudio.swt.xygraph.undo.ZoomCommand;
 import org.csstudio.swt.xygraph.undo.ZoomType;
-import org.csstudio.swt.xygraph.util.XYGraphMediaFactory;
-import org.csstudio.swt.xygraph.util.XYGraphMediaFactory.CURSOR_TYPE;
 import org.eclipse.draw2d.MouseEvent;
 import org.eclipse.draw2d.MouseListener;
 import org.eclipse.draw2d.MouseMotionListener;
@@ -20,6 +18,7 @@ import org.eclipse.swt.widgets.Display;
 
 public class MoveTrace extends Trace
 {
+	
 	private ZoomType zoomType;
 	private Cursor grabbing;
 	private boolean armed;
@@ -39,21 +38,13 @@ public class MoveTrace extends Trace
 		
     }
 	
-	public void setXYGRaph(XYGraph xyGraph)
+	@Override
+	public void setXYGraph(XYGraph xyGraph)
 	{
 		this.xyGraph = xyGraph;
 	}
 	
-	/**
-	 * Zoom 'in' or 'out' by a fixed factor
-	 * 
-	 * @param horizontally
-	 *            along x axes?
-	 * @param vertically
-	 *            along y axes?
-	 * @param factor
-	 *            Zoom factor. Positive to zoom 'in', negative 'out'.
-	 */
+	
 	private void zoomInOut(final boolean horizontally, final boolean vertically, final double factor)
 	{
 		if (horizontally) for (Axis axis : xyGraph.getXAxisList())
@@ -67,33 +58,8 @@ public class MoveTrace extends Trace
 			axis.zoomInOut(center, factor);
 		}
 	}
-	
-	
-	//---------------------------------------------------------------------------------
-	/*
-	class TracePlotMouseListener extends MouseMotionListener.Stub implements MouseListener
-	{
-		public void mousePressed(final MouseEvent me)
-		{
-			//System.out.println("**** MousePressed ****");
-		}
-		
-		public void mouseDoubleClicked(final MouseEvent me)
-		{ 
-			System.out.println("**** MouseDoubleClicked ****");
-		}
 
-		public void mouseDragged(final MouseEvent me)
-		{
-			System.out.println("**** MouseDragged ****");
-		}
 
-		public void mouseReleased(final MouseEvent me)
-		{
-			//System.out.println("**** MouseReleased ****");
-		}
-	}
-	*/
 	/**
 	 * Listener to mouse events, performs panning and some zooms Is very similar
 	 * to the Axis.AxisMouseListener, but unclear how easy/useful it would be to
@@ -144,9 +110,16 @@ public class MoveTrace extends Trace
 						yAxisStartRangeList.add(axis.getRange());
 					break;
 				case NONE:
-					//System.out.println("**** MousePressed NONE ****");
-					//start = me.getLocation();
-					//end = null;
+					System.out.println("**** MousePressed NONE ****");
+					setCursor(grabbing);
+					start = me.getLocation();
+					end = null;
+					xAxisStartRangeList.clear();
+					yAxisStartRangeList.clear();
+					for (Axis axis : xyGraph.getXAxisList())
+						xAxisStartRangeList.add(axis.getRange());
+					for (Axis axis : xyGraph.getYAxisList())
+						yAxisStartRangeList.add(axis.getRange());
 					break;
 				case ZOOM_IN:
 				case ZOOM_IN_HORIZONTALLY:
@@ -185,7 +158,7 @@ public class MoveTrace extends Trace
 		@Override
 		public void mouseDragged(final MouseEvent me)
 		{
-			System.out.println("**** MouseDragged ****");
+			//System.out.println("**** MouseDragged ****");
 			if (!armed) return;
 			switch (zoomType)
 			{
@@ -199,13 +172,14 @@ public class MoveTrace extends Trace
 					end = new Point(bounds.x + bounds.width, me.getLocation().y);
 					break;
 				case PANNING:
-					System.out.println("**** MouseDragged PANNING****");
+					//System.out.println("**** MouseDragged PANNING****");
 					end = me.getLocation();
 					pan();
 					break;
 				case NONE:
 					System.out.println("**** MouseDragged NONE****");
-					//end = me.getLocation();
+					end = me.getLocation();
+					pan();
 					break;
 				default:
 					break;
