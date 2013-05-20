@@ -58,6 +58,22 @@ public class MoveTrace extends Trace
 			axis.zoomInOut(center, factor);
 		}
 	}
+	
+	public void setZoomType(final ZoomType zoomType)
+	{
+		this.zoomType = zoomType;
+		// Set zoom's cursor if axis allows that type of zoom
+		if (isValidZoomType(zoomType)) setCursor(zoomType.getCursor());
+		else setCursor(ZoomType.NONE.getCursor());
+	}
+	
+	private boolean isValidZoomType(final ZoomType zoom)
+	{
+		return zoom == ZoomType.PANNING || zoom == ZoomType.RUBBERBAND_ZOOM || zoom == ZoomType.ZOOM_IN || zoom == ZoomType.ZOOM_OUT
+		        || zoom == ZoomType.HORIZONTAL_ZOOM || zoom == ZoomType.ZOOM_IN_HORIZONTALLY || zoom == ZoomType.ZOOM_OUT_HORIZONTALLY
+		        || zoom == ZoomType.VERTICAL_ZOOM || zoom == ZoomType.ZOOM_OUT_VERTICALLY || zoom == ZoomType.ZOOM_IN_VERTICALLY 
+		        || zoom == ZoomType.NONE;
+	}
 
 
 	/**
@@ -74,13 +90,18 @@ public class MoveTrace extends Trace
 		
 		public void mousePressed(final MouseEvent me)
 		{
-			System.out.println("**** MousePressed ****");
-			// Only react to 'main' mouse button, only react to 'real' zoom
+			
+			//System.out.println("**** MousePressed ****");
+			//Only react to 'main' mouse button, only react to 'real' zoom
 			//Enable ZoomType.NONE mouse event
 			//
 			//if (me.button != 1 || zoomType == ZoomType.NONE) return;
 			if (me.button != 1) return;
-
+			
+			//-- Get Zoom Type
+			zoomType = xyGraph.getZoomType();
+			setZoomType(zoomType);
+			
 			armed = true;
 			// get start position
 			switch (zoomType)

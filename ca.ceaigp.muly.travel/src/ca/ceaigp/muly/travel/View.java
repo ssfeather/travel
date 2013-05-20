@@ -119,7 +119,6 @@ public class View extends ViewPart
 		// set it as the content of LightwightSystem
 		lws.setContents(toolbarArmedXYGraph);
 		
-		
 		swtFigure.setFont(XYGraphMediaFactory.getInstance().getFont(XYGraphMediaFactory.FONT_TAHOMA));
 		swtFigure.primaryXAxis.setTitle("Time");
 		swtFigure.primaryYAxis.setTitle("Amplitude");
@@ -149,7 +148,6 @@ public class View extends ViewPart
 		swtFigure.addTrace(trace1);
 		
 		//-------------------------------------------------------------------------------------------------------
-		/*
 		final Axis x2Axis = new Axis("X2", false);
 		final Axis y2Axis = new Axis("Y2", true);
 		
@@ -160,17 +158,24 @@ public class View extends ViewPart
 		y2Axis.setTitle("Amplitude");
 		x2Axis.setRange(new Range(0,200));
 		x2Axis.setDateEnabled(true);
+		
 		y2Axis.setAutoScale(true);
 		x2Axis.setAutoScale(true);
-		x2Axis.setShowMajorGrid(true);
-		y2Axis.setShowMajorGrid(true);
+		//x2Axis.setShowMajorGrid(true);
+		//y2Axis.setShowMajorGrid(true);
 		x2Axis.setAutoScaleThreshold(0);
 		swtFigure.addAxis(x2Axis);
 		swtFigure.addAxis(y2Axis);
-		*/
+		
 		//-----------------------------------------------------------------------------------------------------
 		
 		SacTimeSeries sac2 = getSacData("/Users/macuser/SeisData/test1.sac");
+		/*
+		Axis x2Axis = swtFigure.primaryXAxis;
+		Axis y2Axis = swtFigure.primaryYAxis;
+		x2Axis.setVisible(false);
+		y2Axis.setVisible(false);
+		*/
 		
 		CircularBufferDataProvider traceDataProvider2 = new CircularBufferDataProvider(true);
 		float[] sacx2 = sac2.getX();
@@ -179,10 +184,11 @@ public class View extends ViewPart
 		traceDataProvider2.setCurrentXDataArray(sacx2);
 		traceDataProvider2.setCurrentYDataArray(sacy2);
 		
-		Axis moveXAxi = swtFigure.primaryXAxis;
-		Axis moveYAxi = swtFigure.primaryYAxis;
-		MoveTrace trace2 = new MoveTrace("Wave2",moveXAxi, moveYAxi, traceDataProvider2);
+
+		//MoveTrace trace2 = new MoveTrace("Wave2",swtFigure.primaryXAxis, swtFigure.primaryYAxis, traceDataProvider2);
+		MoveTrace trace2 = new MoveTrace("Wave2",x2Axis, y2Axis, traceDataProvider2);
 		//Trace trace2 = new Trace("Wave2",swtFigure.primaryXAxis, swtFigure.primaryYAxis, traceDataProvider2, true);
+		//Trace trace2 = new Trace("Wave2",swtFigure.primaryXAxis, swtFigure.primaryYAxis, traceDataProvider2);
 		swtFigure.addTrace(trace2);
 		trace2.setXYGraph(swtFigure);
 		

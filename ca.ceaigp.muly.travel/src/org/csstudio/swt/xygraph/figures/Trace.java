@@ -1676,8 +1676,9 @@ public class Trace extends Figure implements IDataProviderListener, IAxisListene
 	
 	//------------------------------------------------------------------------------------------
 	/*
-	 * 
+	 *  Add Mouse event for trace
 	 */
+/*
 	private ZoomType zoomType;
 	private Cursor grabbing;
 	private boolean armed;
@@ -1718,12 +1719,14 @@ public class Trace extends Figure implements IDataProviderListener, IAxisListene
 			axis.zoomInOut(center, factor);
 		}
 	}
-
+*/
+	
 	/**
 	 * Listener to mouse events, performs panning and some zooms Is very similar
 	 * to the Axis.AxisMouseListener, but unclear how easy/useful it would be to
 	 * base them on the same code.
 	 */
+/*
 	class TracePlotMouseListener extends MouseMotionListener.Stub implements MouseListener
 	{
 		final private List<Range> xAxisStartRangeList = new ArrayList<Range>();
@@ -1977,5 +1980,5 @@ public class Trace extends Figure implements IDataProviderListener, IAxisListene
 			}
 		}
 	}
-	
+*/	
 }
