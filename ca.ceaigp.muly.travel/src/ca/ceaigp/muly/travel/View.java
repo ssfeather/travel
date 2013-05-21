@@ -148,8 +148,9 @@ public class View extends ViewPart
 		swtFigure.addTrace(trace1);
 		
 		//-------------------------------------------------------------------------------------------------------
-		final Axis x2Axis = new Axis("X2", false);
-		final Axis y2Axis = new Axis("Y2", true);
+		
+		Axis x2Axis = new Axis("X2", false);
+		Axis y2Axis = new Axis("Y2", true);
 		
 		x2Axis.setTickLableSide(LabelSide.Secondary);
 		y2Axis.setTickLableSide(LabelSide.Secondary);
@@ -167,15 +168,17 @@ public class View extends ViewPart
 		swtFigure.addAxis(x2Axis);
 		swtFigure.addAxis(y2Axis);
 		
+		
+		//Axis x2Axis = swtFigure.primaryXAxis;
+		//Axis y2Axis = swtFigure.primaryYAxis;
+		//Axis x2Axis = trace1.getXAxis();
+		//Axis y2Axis = trace1.getYAxis();
+		//x2Axis.setVisible(false);
+		//y2Axis.setVisible(false);
+		
 		//-----------------------------------------------------------------------------------------------------
 		
 		SacTimeSeries sac2 = getSacData("/Users/macuser/SeisData/test1.sac");
-		/*
-		Axis x2Axis = swtFigure.primaryXAxis;
-		Axis y2Axis = swtFigure.primaryYAxis;
-		x2Axis.setVisible(false);
-		y2Axis.setVisible(false);
-		*/
 		
 		CircularBufferDataProvider traceDataProvider2 = new CircularBufferDataProvider(true);
 		float[] sacx2 = sac2.getX();
