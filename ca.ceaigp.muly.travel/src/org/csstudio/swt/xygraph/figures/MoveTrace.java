@@ -62,20 +62,9 @@ public class MoveTrace extends Trace
 	public void setZoomType(final ZoomType zoomType)
 	{
 		this.zoomType = zoomType;
-		// Set zoom's cursor if axis allows that type of zoom
-		if (isValidZoomType(zoomType)) setCursor(zoomType.getCursor());
-		else setCursor(ZoomType.NONE.getCursor());
+		setCursor(zoomType.getCursor());
 	}
 	
-	private boolean isValidZoomType(final ZoomType zoom)
-	{
-		return zoom == ZoomType.PANNING || zoom == ZoomType.RUBBERBAND_ZOOM || zoom == ZoomType.ZOOM_IN || zoom == ZoomType.ZOOM_OUT
-		        || zoom == ZoomType.HORIZONTAL_ZOOM || zoom == ZoomType.ZOOM_IN_HORIZONTALLY || zoom == ZoomType.ZOOM_OUT_HORIZONTALLY
-		        || zoom == ZoomType.VERTICAL_ZOOM || zoom == ZoomType.ZOOM_OUT_VERTICALLY || zoom == ZoomType.ZOOM_IN_VERTICALLY 
-		        || zoom == ZoomType.NONE;
-	}
-
-
 	/**
 	 * Listener to mouse events, performs panning and some zooms Is very similar
 	 * to the Axis.AxisMouseListener, but unclear how easy/useful it would be to
@@ -274,6 +263,9 @@ public class MoveTrace extends Trace
 					break;
 				case PANNING:
 					pan();
+					break;
+				case NONE:
+					movePan();
 					break;
 				case ZOOM_IN:
 				case ZOOM_IN_HORIZONTALLY:

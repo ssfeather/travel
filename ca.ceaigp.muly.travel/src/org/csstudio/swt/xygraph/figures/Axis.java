@@ -815,6 +815,17 @@ public class Axis extends LinearScale
 		for (IAxisListener listener : listeners)
 			listener.axisLogScaleChanged(this, old, logScale);
 	}
+	
+	/*
+	 *  Add Mouse's zoomType is NONE move trace
+	 *  
+	 *  @author Muleiyu
+	 *  
+	 */
+	public List<Trace> getTraceList()
+	{
+		return traceList;
+	}
 
 	/**
 	 * Listener to mouse events, performs panning and some zooms Is very similar

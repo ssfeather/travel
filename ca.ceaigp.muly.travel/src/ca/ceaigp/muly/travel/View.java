@@ -189,11 +189,14 @@ public class View extends ViewPart
 		
 
 		//MoveTrace trace2 = new MoveTrace("Wave2",swtFigure.primaryXAxis, swtFigure.primaryYAxis, traceDataProvider2);
-		MoveTrace trace2 = new MoveTrace("Wave2",x2Axis, y2Axis, traceDataProvider2);
 		//Trace trace2 = new Trace("Wave2",swtFigure.primaryXAxis, swtFigure.primaryYAxis, traceDataProvider2, true);
-		//Trace trace2 = new Trace("Wave2",swtFigure.primaryXAxis, swtFigure.primaryYAxis, traceDataProvider2);
+		
+		//MoveTrace trace2 = new MoveTrace("Wave2",x2Axis, y2Axis, traceDataProvider2);
+		//trace2.setXYGraph(swtFigure);
+		Trace trace2 = new Trace("Wave2",x2Axis, y2Axis, traceDataProvider2);
+		trace2.setEnableMove(true);
+		
 		swtFigure.addTrace(trace2);
-		trace2.setXYGraph(swtFigure);
 		
 		/*
 		//Test log4j     

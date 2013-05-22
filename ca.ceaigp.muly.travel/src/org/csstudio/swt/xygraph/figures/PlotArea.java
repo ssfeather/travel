@@ -349,8 +349,8 @@ public class PlotArea extends Figure
 		{
 			// Only react to 'main' mouse button, only react to 'real' zoom
 			//启用zoomType为NONE状态，为波形移动
-			//if (me.button != 1) return;
-			if (me.button != 1 || zoomType == ZoomType.NONE) return;
+			if (me.button != 1) return;
+			//if (me.button != 1 || zoomType == ZoomType.NONE) return;
 			armed = true;
 			// get start position
 			switch (zoomType)
@@ -380,9 +380,15 @@ public class PlotArea extends Figure
 						yAxisStartRangeList.add(axis.getRange());
 					break;
 				case NONE:
-					//System.out.println("**** MousePressed NONE ****");
-					//start = me.getLocation();
-					//end = null;
+					System.out.println("**** MousePressed NONE ****");
+					start = me.getLocation();
+					end = null;
+					xAxisStartRangeList.clear();
+					yAxisStartRangeList.clear();
+					for (Axis axis : xyGraph.getXAxisList())
+						xAxisStartRangeList.add(axis.getRange());
+					for (Axis axis : xyGraph.getYAxisList())
+						yAxisStartRangeList.add(axis.getRange());
 					break;
 				case ZOOM_IN:
 				case ZOOM_IN_HORIZONTALLY:
@@ -420,7 +426,7 @@ public class PlotArea extends Figure
 		@Override
 		public void mouseDragged(final MouseEvent me)
 		{
-			//System.out.println("**** MouseDragged ****");
+			System.out.println("**** MouseDragged ****");
 			if (!armed) return;
 			switch (zoomType)
 			{
@@ -440,7 +446,8 @@ public class PlotArea extends Figure
 					break;
 				case NONE:
 					//System.out.println("**** MouseDragged NONE****");
-					//end = me.getLocation();
+					end = me.getLocation();
+					movePan();
 					break;
 				default:
 					break;
@@ -549,6 +556,43 @@ public class PlotArea extends Figure
 				axis.pan(yAxisStartRangeList.get(i), axis.getPositionValue(start.y, false), axis.getPositionValue(end.y, false));
 			}
 			
+		}
+		
+		/*
+		 *  Add Mouse's zoomType is NONE move trace
+		 *  
+		 *  @author Muleiyu
+		 *  
+		 */
+		private void movePan()
+		{
+			List<Axis> axes = xyGraph.getXAxisList();
+			for (int i = 0; i < axes.size(); ++i)
+			{
+				final Axis axis = axes.get(i);
+				//axis.setDirty(false);
+				for (Trace trace : axis.getTraceList())
+				{
+					if (trace.isEnableMove())
+					{
+						axis.pan(xAxisStartRangeList.get(i), axis.getPositionValue(start.x, false), axis.getPositionValue(end.x, false));
+					}
+				}
+			}
+			
+			axes = xyGraph.getYAxisList();
+			for (int i = 0; i < axes.size(); ++i)
+			{
+				final Axis axis = axes.get(i);
+				//axis.setDirty(false);
+				for (Trace trace : axis.getTraceList())
+				{
+					if (trace.isEnableMove())
+					{
+						axis.pan(yAxisStartRangeList.get(i), axis.getPositionValue(start.y, false), axis.getPositionValue(end.y, false));
+					}
+				}
+			}
 		}
 
 		/** Perform the in or out zoom according to zoomType */
