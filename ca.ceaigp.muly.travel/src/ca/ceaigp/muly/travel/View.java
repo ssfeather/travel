@@ -10,7 +10,6 @@ import org.csstudio.swt.xygraph.figures.MoveTrace;
 import org.csstudio.swt.xygraph.figures.ToolbarArmedXYGraph;
 import org.csstudio.swt.xygraph.figures.Trace;
 import org.csstudio.swt.xygraph.figures.XYGraph;
-import org.csstudio.swt.xygraph.linearscale.Range;
 import org.csstudio.swt.xygraph.linearscale.AbstractScale.LabelSide;
 import org.csstudio.swt.xygraph.util.XYGraphMediaFactory;
 import org.eclipse.draw2d.LightweightSystem;
@@ -122,14 +121,15 @@ public class View extends ViewPart
 		swtFigure.setFont(XYGraphMediaFactory.getInstance().getFont(XYGraphMediaFactory.FONT_TAHOMA));
 		swtFigure.primaryXAxis.setTitle("Time");
 		swtFigure.primaryYAxis.setTitle("Amplitude");
-		swtFigure.primaryXAxis.setRange(new Range(0,200));
+		//swtFigure.primaryXAxis.setRange(new Range(0,200));
+		//swtFigure.primaryYAxis.setRange(new Range(-200,200));
 		swtFigure.primaryXAxis.setDateEnabled(true);
 		swtFigure.primaryYAxis.setAutoScale(true);
 		swtFigure.primaryXAxis.setAutoScale(true);
 		swtFigure.primaryXAxis.setShowMajorGrid(true);
 		swtFigure.primaryYAxis.setShowMajorGrid(true);
 		swtFigure.primaryXAxis.setAutoScaleThreshold(0);
-		swtFigure.getPlotArea().setShowBorder(true);
+		//swtFigure.getPlotArea().setShowBorder(true);
 		//设置轴不可见
 		//swtFigure.primaryXAxis.setVisible(false);
 		//swtFigure.primaryYAxis.setVisible(false);
@@ -157,22 +157,22 @@ public class View extends ViewPart
 
 		x2Axis.setTitle("Time");
 		y2Axis.setTitle("Amplitude");
-		x2Axis.setRange(new Range(0,200));
+		//x2Axis.setRange(new Range(0,200));
+		//y2Axis.setRange(new Range(-200,200));
 		x2Axis.setDateEnabled(true);
 		
-		y2Axis.setAutoScale(true);
-		x2Axis.setAutoScale(true);
+		//y2Axis.setAutoScale(true);
+		//x2Axis.setAutoScale(true);
+		
+		x2Axis.setRange(swtFigure.primaryXAxis.getRange());
+		y2Axis.setRange(swtFigure.primaryYAxis.getRange());
+		
 		//x2Axis.setShowMajorGrid(true);
 		//y2Axis.setShowMajorGrid(true);
 		x2Axis.setAutoScaleThreshold(0);
 		swtFigure.addAxis(x2Axis);
 		swtFigure.addAxis(y2Axis);
 		
-		
-		//Axis x2Axis = swtFigure.primaryXAxis;
-		//Axis y2Axis = swtFigure.primaryYAxis;
-		//Axis x2Axis = trace1.getXAxis();
-		//Axis y2Axis = trace1.getYAxis();
 		//x2Axis.setVisible(false);
 		//y2Axis.setVisible(false);
 		

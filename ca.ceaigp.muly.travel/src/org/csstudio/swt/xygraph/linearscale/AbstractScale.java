@@ -421,9 +421,15 @@ public abstract class AbstractScale extends Figure
 			{
 				setRange(t1 > t2 ? t1 : t2, t1 > t2 ? t2 : t1);
 			}
-			else setRange(t1 > t2 ? t2 : t1, t1 > t2 ? t1 : t2);
+			else 
+			{
+				setRange(t1 > t2 ? t2 : t1, t1 > t2 ? t1 : t2);
+			}
 		}
-		else setRange(t1, t2);
+		else 
+		{
+			setRange(t1, t2);
+		}
 	}
 
 	/**

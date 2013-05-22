@@ -85,6 +85,8 @@ public class MoveTrace extends Trace
 	{
 		final private List<Range> xAxisStartRangeList = new ArrayList<Range>();
 		final private List<Range> yAxisStartRangeList = new ArrayList<Range>();
+		private Range moveXRange;
+		private Range moveYRange;
 
 		private SaveStateCommand command;
 		
@@ -135,12 +137,16 @@ public class MoveTrace extends Trace
 					setCursor(grabbing);
 					start = me.getLocation();
 					end = null;
+					/*
 					xAxisStartRangeList.clear();
 					yAxisStartRangeList.clear();
 					for (Axis axis : xyGraph.getXAxisList())
 						xAxisStartRangeList.add(axis.getRange());
 					for (Axis axis : xyGraph.getYAxisList())
 						yAxisStartRangeList.add(axis.getRange());
+					*/
+					moveXRange = getXAxis().getRange();
+					moveYRange = getYAxis().getRange();
 					break;
 				case ZOOM_IN:
 				case ZOOM_IN_HORIZONTALLY:
@@ -200,7 +206,7 @@ public class MoveTrace extends Trace
 				case NONE:
 					System.out.println("**** MouseDragged NONE****");
 					end = me.getLocation();
-					pan();
+					movePan();
 					break;
 				default:
 					break;
@@ -211,7 +217,7 @@ public class MoveTrace extends Trace
 		@Override
 		public void mouseExited(final MouseEvent me)
 		{
-			System.out.println("**** MouseExited ****");
+			//System.out.println("**** MouseExited ****");
 			// Treat like releasing the button to stop zoomIn/Out timer
 			switch (zoomType)
 			{
@@ -294,6 +300,7 @@ public class MoveTrace extends Trace
 		
 		private void pan()
 		{
+			
 			List<Axis> axes = xyGraph.getXAxisList();
 			for (int i = 0; i < axes.size(); ++i)
 			{
@@ -309,6 +316,16 @@ public class MoveTrace extends Trace
 				//axis.setDirty(false);
 				axis.pan(yAxisStartRangeList.get(i), axis.getPositionValue(start.y, false), axis.getPositionValue(end.y, false));
 			}
+			
+		}
+		private void movePan()
+		{
+			
+			Axis axisX = getXAxis();
+			axisX.pan(moveXRange, axisX.getPositionValue(start.x, false), axisX.getPositionValue(end.x, false));
+			
+			Axis axisY = getYAxis();
+			axisY.pan(moveYRange, axisY.getPositionValue(start.y, false), axisY.getPositionValue(end.y, false));
 			
 		}
 
