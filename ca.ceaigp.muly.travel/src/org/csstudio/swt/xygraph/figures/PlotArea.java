@@ -380,7 +380,7 @@ public class PlotArea extends Figure
 						yAxisStartRangeList.add(axis.getRange());
 					break;
 				case NONE:
-					System.out.println("**** MousePressed NONE ****");
+					//System.out.println("**** MousePressed NONE ****");
 					start = me.getLocation();
 					end = null;
 					xAxisStartRangeList.clear();
@@ -426,7 +426,7 @@ public class PlotArea extends Figure
 		@Override
 		public void mouseDragged(final MouseEvent me)
 		{
-			System.out.println("**** MouseDragged ****");
+			//System.out.println("**** MouseDragged ****");
 			if (!armed) return;
 			switch (zoomType)
 			{

@@ -6,7 +6,6 @@ import java.io.IOException;
 
 import org.csstudio.swt.xygraph.dataprovider.CircularBufferDataProvider;
 import org.csstudio.swt.xygraph.figures.Axis;
-import org.csstudio.swt.xygraph.figures.MoveTrace;
 import org.csstudio.swt.xygraph.figures.ToolbarArmedXYGraph;
 import org.csstudio.swt.xygraph.figures.Trace;
 import org.csstudio.swt.xygraph.figures.XYGraph;
