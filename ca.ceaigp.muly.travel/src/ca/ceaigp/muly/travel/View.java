@@ -3,6 +3,8 @@ package ca.ceaigp.muly.travel;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.OptionalDataException;
+import java.io.StreamCorruptedException;
 
 import org.csstudio.swt.xygraph.dataprovider.CircularBufferDataProvider;
 import org.csstudio.swt.xygraph.figures.Axis;
@@ -24,6 +26,8 @@ import org.eclipse.ui.ISharedImages;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.ViewPart;
 
+import edu.sc.seis.TauP.MatTauP_Curve;
+import edu.sc.seis.TauP.TT_Curve;
 import edu.sc.seis.seisFile.sac.SacTimeSeries;
 
 
@@ -119,22 +123,102 @@ public class View extends ViewPart
 		
 		swtFigure.setFont(XYGraphMediaFactory.getInstance().getFont(XYGraphMediaFactory.FONT_TAHOMA));
 		swtFigure.primaryXAxis.setTitle("Time");
-		swtFigure.primaryYAxis.setTitle("Amplitude");
+		swtFigure.primaryYAxis.setTitle("Dist");
 		//swtFigure.primaryXAxis.setRange(new Range(0,200));
 		//swtFigure.primaryYAxis.setRange(new Range(-200,200));
-		swtFigure.primaryXAxis.setDateEnabled(true);
+		//swtFigure.primaryXAxis.setDateEnabled(true);
 		swtFigure.primaryYAxis.setAutoScale(true);
 		swtFigure.primaryXAxis.setAutoScale(true);
 		swtFigure.primaryXAxis.setShowMajorGrid(true);
 		swtFigure.primaryYAxis.setShowMajorGrid(true);
-		swtFigure.primaryXAxis.setAutoScaleThreshold(0);
+		//swtFigure.primaryXAxis.setAutoFormat(true);
 		//swtFigure.getPlotArea().setShowBorder(true);
 		//设置轴不可见
 		//swtFigure.primaryXAxis.setVisible(false);
 		//swtFigure.primaryYAxis.setVisible(false);
+		
+		//--------------------------------------------------------------------------------------------------------
+		// Taup Draw Curve
+		try
+		{
+			String[] curveArgs = new String[6];
+			curveArgs[0] = "-mod";
+			curveArgs[1] = "iasp91";
+			curveArgs[2] = "-h"; 
+			curveArgs[3] = "10";
+			curveArgs[4] = "-ph";
+			curveArgs[5] = "p, s, P, S, Pn, Sn, PcP, ScS";
+			TT_Curve[] ttcurve = MatTauP_Curve.run_curve(curveArgs);
+			
+			//System.out.println(ttcurve.length);
+			for(TT_Curve ttc : ttcurve)
+			{
+				/*
+				System.out.println("PName: " + ttc.phaseName);
+				System.out.println("SDepth: " + ttc.sourceDepth);
+				System.out.println("Dist: " + ttc.dist);
+				System.out.println("Time: " + ttc.time);
+				System.out.println("rayParam: " + ttc.rayParam);
+				*/
+				
+				float[] dists = new float[ttc.dist.length];
+				float[] times = new float[ttc.time.length];
+				
+				double[] tempfd = ttc.dist;
+				for(int i=0; i<ttc.dist.length; i++)
+				{	
+					Double fd = new Double(tempfd[i]);
+					dists[i] = fd.floatValue();
+					//System.out.println("Dist: " + dists[i]);
+				}
+				tempfd = ttc.time;
+				for(int i=0; i<ttc.time.length; i++)
+				{	
+					Double fd = new Double(tempfd[i]);
+					times[i] = fd.floatValue();
+					//System.out.println("Time: " + times[i]);
+				}
+				
+				System.out.println("Dist length: " + ttc.dist.length);
+				System.out.println("Time length: " + ttc.time.length);
+				
+				CircularBufferDataProvider traceDataProvider = new CircularBufferDataProvider(false);
+				traceDataProvider.setBufferSize(900);
+				traceDataProvider.setCurrentXDataArray(times);
+				traceDataProvider.setCurrentYDataArray(dists);
+			
+				Trace trace1 = new Trace(ttc.phaseName + "_" + ttc.sourceDepth ,swtFigure.primaryXAxis, swtFigure.primaryYAxis, traceDataProvider);
+				swtFigure.addTrace(trace1);
+			}
+		}
+        catch (OptionalDataException e)
+        {
+	        // TODO Auto-generated catch block
+	        e.printStackTrace();
+        }
+        catch (StreamCorruptedException e)
+        {
+	        // TODO Auto-generated catch block
+	        e.printStackTrace();
+        }
+        catch (FileNotFoundException e)
+        {
+	        // TODO Auto-generated catch block
+	        e.printStackTrace();
+        }
+        catch (ClassNotFoundException e)
+        {
+	        // TODO Auto-generated catch block
+	        e.printStackTrace();
+        }
+        catch (IOException e)
+        {
+	        // TODO Auto-generated catch block
+	        e.printStackTrace();
+        }
 	
 		//--------------------------------------------------------------------------------------------------------
-		
+/*		
 		SacTimeSeries sac1 = getSacData("/Users/macuser/SeisData/test2.sac");
 		CircularBufferDataProvider traceDataProvider1 = new CircularBufferDataProvider(true);
 		float[] sacx1 = sac1.getX();
@@ -145,7 +229,7 @@ public class View extends ViewPart
 	
 		Trace trace1 = new Trace("Wave1",swtFigure.primaryXAxis, swtFigure.primaryYAxis, traceDataProvider1);
 		swtFigure.addTrace(trace1);
-		
+*/		
 		//-------------------------------------------------------------------------------------------------------
 		
 		Axis x2Axis = new Axis("X2", false);
@@ -158,23 +242,23 @@ public class View extends ViewPart
 		y2Axis.setTitle("Amplitude");
 		//x2Axis.setRange(new Range(0,200));
 		//y2Axis.setRange(new Range(-200,200));
-		x2Axis.setDateEnabled(true);
+		//x2Axis.setDateEnabled(true);
 		
-		//y2Axis.setAutoScale(true);
-		//x2Axis.setAutoScale(true);
+		y2Axis.setAutoScale(true);
+		x2Axis.setAutoScale(true);
 		
 		x2Axis.setRange(swtFigure.primaryXAxis.getRange());
 		y2Axis.setRange(swtFigure.primaryYAxis.getRange());
 		
 		//x2Axis.setShowMajorGrid(true);
 		//y2Axis.setShowMajorGrid(true);
-		x2Axis.setAutoScaleThreshold(0);
+		//x2Axis.setAutoScaleThreshold(0);
 		swtFigure.addAxis(x2Axis);
 		swtFigure.addAxis(y2Axis);
 		
 		//x2Axis.setVisible(false);
 		//y2Axis.setVisible(false);
-		
+	
 		//-----------------------------------------------------------------------------------------------------
 		
 		SacTimeSeries sac2 = getSacData("/Users/macuser/SeisData/test1.sac");
@@ -192,7 +276,7 @@ public class View extends ViewPart
 		
 		//MoveTrace trace2 = new MoveTrace("Wave2",x2Axis, y2Axis, traceDataProvider2);
 		//trace2.setXYGraph(swtFigure);
-		Trace trace2 = new Trace("Wave2",x2Axis, y2Axis, traceDataProvider2);
+		Trace trace2 = new Trace("Wave",x2Axis, y2Axis, traceDataProvider2);
 		trace2.setEnableMove(true);
 		
 		swtFigure.addTrace(trace2);

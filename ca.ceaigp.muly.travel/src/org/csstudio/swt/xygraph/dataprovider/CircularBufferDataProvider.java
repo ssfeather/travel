@@ -284,6 +284,7 @@ public class CircularBufferDataProvider extends AbstractDataProvider
 		currentYDataArrayChanged = true;
 		tryToAddDataArray();
 	}
+	
 
 	/**
 	 * Try to add a new data array to trace data. Whether it will be added or
