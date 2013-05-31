@@ -19,7 +19,9 @@ import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.widgets.Canvas;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.ISharedImages;
@@ -261,7 +263,7 @@ public class View extends ViewPart
 	
 		//-----------------------------------------------------------------------------------------------------
 		
-		SacTimeSeries sac2 = getSacData("/Users/macuser/SeisData/test1.sac");
+		SacTimeSeries sac2 = getSacData("/Users/macuser/SeisData/test2.sac");
 		
 		CircularBufferDataProvider traceDataProvider2 = new CircularBufferDataProvider(true);
 		float[] sacx2 = sac2.getX();
@@ -278,6 +280,7 @@ public class View extends ViewPart
 		//trace2.setXYGraph(swtFigure);
 		Trace trace2 = new Trace("Wave",x2Axis, y2Axis, traceDataProvider2);
 		trace2.setEnableMove(true);
+		trace2.setTraceColor(new Color(null, new RGB(0,0,255)));
 		
 		swtFigure.addTrace(trace2);
 		
