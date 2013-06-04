@@ -12,6 +12,7 @@ import org.csstudio.swt.xygraph.figures.ToolbarArmedXYGraph;
 import org.csstudio.swt.xygraph.figures.Trace;
 import org.csstudio.swt.xygraph.figures.XYGraph;
 import org.csstudio.swt.xygraph.linearscale.AbstractScale.LabelSide;
+import org.csstudio.swt.xygraph.linearscale.Range;
 import org.csstudio.swt.xygraph.util.XYGraphMediaFactory;
 import org.eclipse.draw2d.LightweightSystem;
 import org.eclipse.jface.viewers.IStructuredContentProvider;
@@ -141,57 +142,28 @@ public class View extends ViewPart
 		
 		//--------------------------------------------------------------------------------------------------------
 		// Taup Draw Curve
+		String[] travelArgs = new String[3];
+		travelArgs[0] = "iasp91";
+		travelArgs[1] = "62";
+		travelArgs[2] = "p, s, P, S, Pn, Sn, PcP, ScS";
+		new DrawCurve(travelArgs, swtFigure);
+		
+		travelArgs[0] = "iasp91";
+		travelArgs[1] = "10";
+		travelArgs[2] = "P,pP,S,sS";
+		new DrawCurve(travelArgs, swtFigure);
+/*
+		TT_Curve[] ttcurve  = null;
 		try
 		{
 			String[] curveArgs = new String[6];
 			curveArgs[0] = "-mod";
 			curveArgs[1] = "iasp91";
 			curveArgs[2] = "-h"; 
-			curveArgs[3] = "10";
+			curveArgs[3] = "62";
 			curveArgs[4] = "-ph";
 			curveArgs[5] = "p, s, P, S, Pn, Sn, PcP, ScS";
-			TT_Curve[] ttcurve = MatTauP_Curve.run_curve(curveArgs);
-			
-			//System.out.println(ttcurve.length);
-			for(TT_Curve ttc : ttcurve)
-			{
-				/*
-				System.out.println("PName: " + ttc.phaseName);
-				System.out.println("SDepth: " + ttc.sourceDepth);
-				System.out.println("Dist: " + ttc.dist);
-				System.out.println("Time: " + ttc.time);
-				System.out.println("rayParam: " + ttc.rayParam);
-				*/
-				
-				float[] dists = new float[ttc.dist.length];
-				float[] times = new float[ttc.time.length];
-				
-				double[] tempfd = ttc.dist;
-				for(int i=0; i<ttc.dist.length; i++)
-				{	
-					Double fd = new Double(tempfd[i]);
-					dists[i] = fd.floatValue();
-					//System.out.println("Dist: " + dists[i]);
-				}
-				tempfd = ttc.time;
-				for(int i=0; i<ttc.time.length; i++)
-				{	
-					Double fd = new Double(tempfd[i]);
-					times[i] = fd.floatValue();
-					//System.out.println("Time: " + times[i]);
-				}
-				
-				System.out.println("Dist length: " + ttc.dist.length);
-				System.out.println("Time length: " + ttc.time.length);
-				
-				CircularBufferDataProvider traceDataProvider = new CircularBufferDataProvider(false);
-				traceDataProvider.setBufferSize(900);
-				traceDataProvider.setCurrentXDataArray(times);
-				traceDataProvider.setCurrentYDataArray(dists);
-			
-				Trace trace1 = new Trace(ttc.phaseName + "_" + ttc.sourceDepth ,swtFigure.primaryXAxis, swtFigure.primaryYAxis, traceDataProvider);
-				swtFigure.addTrace(trace1);
-			}
+			ttcurve = MatTauP_Curve.run_curve(curveArgs);
 		}
         catch (OptionalDataException e)
         {
@@ -218,7 +190,35 @@ public class View extends ViewPart
 	        // TODO Auto-generated catch block
 	        e.printStackTrace();
         }
-	
+		
+		for(TT_Curve ttc : ttcurve)
+		{
+			float[] dists = new float[ttc.dist.length];
+			float[] times = new float[ttc.time.length];
+			
+			double[] tempfd = ttc.dist;
+			for(int i=0; i<ttc.dist.length; i++)
+			{	
+				Double fd = new Double(tempfd[i]);
+				dists[i] = fd.floatValue();
+			}
+			tempfd = ttc.time;
+			for(int i=0; i<ttc.time.length; i++)
+			{	
+				Double fd = new Double(tempfd[i]);
+				times[i] = fd.floatValue();
+				//System.out.println("Time: " + times[i]);
+			}
+			
+			CircularBufferDataProvider traceDataProvider = new CircularBufferDataProvider(false);
+			traceDataProvider.setBufferSize(9000);
+			traceDataProvider.setCurrentXDataArray(times);
+			traceDataProvider.setCurrentYDataArray(dists);
+		
+			Trace trace1 = new Trace(ttc.phaseName + "_" + ttc.sourceDepth ,swtFigure.primaryXAxis, swtFigure.primaryYAxis, traceDataProvider);
+			swtFigure.addTrace(trace1);
+		}
+*/	
 		//--------------------------------------------------------------------------------------------------------
 /*		
 		SacTimeSeries sac1 = getSacData("/Users/macuser/SeisData/test2.sac");
@@ -232,8 +232,26 @@ public class View extends ViewPart
 		Trace trace1 = new Trace("Wave1",swtFigure.primaryXAxis, swtFigure.primaryYAxis, traceDataProvider1);
 		swtFigure.addTrace(trace1);
 */		
-		//-------------------------------------------------------------------------------------------------------
+		//-----------------------------------------------------------------------------------------------------
 		
+		SacTimeSeries sac2 = getSacData("/Users/macuser/SeisData/test2.sac");
+		float[] sacx2 = sac2.getX();
+		float[] sacy2 = sac2.getY();
+		
+		//System.out.println("Range X: " + (swtFigure.primaryXAxis.getRange().getUpper() - swtFigure.primaryXAxis.getRange().getLower()));
+		//System.out.println("Data Length: " + sac2.getHeader().getDelta() + " ; " + sac2.getNumPtsRead() + " ; " + sac2.getNumPtsRead()*sac2.getHeader().getDelta());
+		//double dataTimeScale = sac2.getNumPtsRead()*sac2.getHeader().getDelta()/(swtFigure.primaryXAxis.getRange().getUpper() - swtFigure.primaryXAxis.getRange().getLower());
+		//System.out.println("Data Time scale: " + dataTimeScale);
+		
+		CircularBufferDataProvider traceDataProvider2 = new CircularBufferDataProvider(true);
+		
+		traceDataProvider2.setBufferSize(sacy2.length);
+		traceDataProvider2.setCurrentXDataArray(sacx2);
+		traceDataProvider2.setCurrentYDataArray(sacy2);
+		//traceDataProvider2.addSample(sample);
+		//traceDataProvider2.getSample(1);
+		
+		//-------------------------------------------------------------------------------------------------------
 		Axis x2Axis = new Axis("X2", false);
 		Axis y2Axis = new Axis("Y2", true);
 		
@@ -247,31 +265,22 @@ public class View extends ViewPart
 		//x2Axis.setDateEnabled(true);
 		
 		y2Axis.setAutoScale(true);
-		x2Axis.setAutoScale(true);
+		//x2Axis.setAutoScale(true);
 		
-		x2Axis.setRange(swtFigure.primaryXAxis.getRange());
+		x2Axis.setRange(new Range(swtFigure.primaryXAxis.getRange().getLower(), swtFigure.primaryXAxis.getRange().getUpper()/sac2.getHeader().getDelta()));
+		//x2Axis.setRange(swtFigure.primaryXAxis.getRange());
 		y2Axis.setRange(swtFigure.primaryYAxis.getRange());
 		
 		//x2Axis.setShowMajorGrid(true);
 		//y2Axis.setShowMajorGrid(true);
-		//x2Axis.setAutoScaleThreshold(0);
+		x2Axis.setAutoScaleThreshold(0);
 		swtFigure.addAxis(x2Axis);
 		swtFigure.addAxis(y2Axis);
 		
 		//x2Axis.setVisible(false);
 		//y2Axis.setVisible(false);
-	
-		//-----------------------------------------------------------------------------------------------------
 		
-		SacTimeSeries sac2 = getSacData("/Users/macuser/SeisData/test2.sac");
-		
-		CircularBufferDataProvider traceDataProvider2 = new CircularBufferDataProvider(true);
-		float[] sacx2 = sac2.getX();
-		float[] sacy2 = sac2.getY();
-		traceDataProvider2.setBufferSize(sacy2.length);
-		traceDataProvider2.setCurrentXDataArray(sacx2);
-		traceDataProvider2.setCurrentYDataArray(sacy2);
-		
+		//------------------------------------------------------------------------------------------------------------------------
 
 		//MoveTrace trace2 = new MoveTrace("Wave2",swtFigure.primaryXAxis, swtFigure.primaryYAxis, traceDataProvider2);
 		//Trace trace2 = new Trace("Wave2",swtFigure.primaryXAxis, swtFigure.primaryYAxis, traceDataProvider2, true);
